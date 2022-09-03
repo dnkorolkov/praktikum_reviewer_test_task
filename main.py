@@ -1,4 +1,3 @@
-# В программе используются только даты, без времени суток, можно использовать date вместо datetime.
 import datetime as dt
 
 
@@ -11,6 +10,7 @@ class Record:
         # либо использовать обычный условный оператор вместо тернарной операции.
         # Но не разрывать конструкцию if-условие без особой необходимости.
         self.date = (
+            # Можно использовать date.today()
             dt.datetime.now().date() if
             not
             date else dt.datetime.strptime(date, '%d.%m.%Y').date())
@@ -40,7 +40,7 @@ class Calculator:
         today = dt.datetime.now().date()
         # Для повышения эффективности лучше вычислить дату начала недели перед началом цикла.
         for record in self.records:
-            # Лучше напрямую сравнивать даты, чем вычислять дни, можно использовать двойное сравнение week_begin <= record.date <= today, так нагляднее
+            # Лучше напрямую сравнивать даты, чем вычислять дни, можно использовать двойное сравнение week_begin <= record.date <= today, так нагляднее.
             if (
                 (today - record.date).days < 7 and
                 (today - record.date).days >= 0
@@ -50,8 +50,10 @@ class Calculator:
 
 
 class CaloriesCalculator(Calculator):
+    # Комментарий к функции должен описывать, что делает эта функция.
+    # В данном случае, функция не получает, а возвращает информацию об остатке калорий.
+    # Комментарий к функции лучше оформить в виде docstring
     def get_calories_remained(self):  # Получает остаток калорий на сегодня
-        # Можно сравнить значение в if, а не вычислять разность, так будет более понятен смысл
         x = self.limit - self.get_today_stats()
         if x > 0:
             return f'Сегодня можно съесть что-нибудь' \
@@ -62,7 +64,7 @@ class CaloriesCalculator(Calculator):
 
 
 class CashCalculator(Calculator):
-    # float можно задать литералом 60.
+    # float можно задать литералом, например, 60.0
     USD_RATE = float(60)  # Курс доллар США.
     EURO_RATE = float(70)  # Курс Евро.
 
@@ -70,7 +72,9 @@ class CashCalculator(Calculator):
                                 USD_RATE=USD_RATE, EURO_RATE=EURO_RATE):
         currency_type = currency
         cash_remained = self.limit - self.get_today_stats()
-        # Можно завести словарь, где ключ -- обозначение валюты, значение -- курс. Это позволит легко добавить валюту.
+        # Можно завести словарь, где ключ -- обозначение валюты, значение -- тьюпл из курса и строки с обозначением валюты.
+        # Это позволит легко добавить новую валюту.
+        # Это необязательно для данного задания, но может пригодиться в будущем.
         if currency == 'usd':
             cash_remained /= USD_RATE
             currency_type = 'USD'
@@ -81,6 +85,8 @@ class CashCalculator(Calculator):
             cash_remained == 1.00
             currency_type = 'руб'
         # Можно предусмотреть генерацию исключения при получении неизвестной валюты.
+        # Или, если получена неизвестная валюта, выводить в валюте по умолчанию (в рублях).
+        # Это необязательно для данного задания, просто совет по улучшению.
         if cash_remained > 0:
             return (
                 # Не нужно использовать вызов функции в f-строке
@@ -96,5 +102,7 @@ class CashCalculator(Calculator):
                    ' твой долг - {0:.2f} {1}'.format(-cash_remained,
                                                      currency_type)
 
+    # Не нужно переопределять метод, если он не добавляет никакой функциональности.
+    # Достаточно наличия метода в базовом классе.
     def get_week_stats(self):
         super().get_week_stats()
